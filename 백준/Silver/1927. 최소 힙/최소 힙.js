@@ -1,6 +1,7 @@
 let fs = require("fs");
-const [n, ...input] = fs
-  .readFileSync("/dev/stdin")
+const filePath = process.platform === "linux" ? "/dev/stdin" : "input.txt";
+const [N, ...input] = fs
+  .readFileSync(filePath)
   .toString()
   .trim()
   .split("\n")
@@ -25,8 +26,8 @@ class MinHeap {
 
   push(value) {
     this.heap.push(value);
-    
-    let index = this.heap.length - 1;
+
+    let index = this.size();
     let parent = Math.floor(index / 2);
 
     while (index > 1 && this.heap[parent] > this.heap[index]) {
@@ -37,53 +38,51 @@ class MinHeap {
   }
 
   pop() {
-    const min = this.heap[1];
+    if (this.heap.length === 1) return 0; // 힙이 비어있을 경우 0을 반환
+    if (this.heap.length === 2) return this.heap.pop(); // 하나만 남았을 경우 그 값을 반환
 
-    if (this.heap.length <= 2) {
-      this.heap = [null];
-    } else {
-      this.heap[1] = this.heap.pop();
-    }
+    const min = this.heap[1]; // 루트 요소(최소값) 저장
+    this.heap[1] = this.heap.pop(); // 마지막 요소를 루트 위치로 이동
 
     let index = 1;
-    let leftChild = index * 2;
-    let rightChild = index * 2 + 1;
+    while (true) {
+      let leftIndex = 2 * index;
+      let rightIndex = 2 * index + 1;
+      let smallest = index;
 
-    if (!this.heap[leftChild]) return min;
-    if (!this.heap[rightChild]) {
-      if (this.heap[leftChild] < this.heap[index]) {
-        this.swap(leftChild, index);
+      if (
+        leftIndex < this.heap.length &&
+        this.heap[leftIndex] < this.heap[smallest]
+      ) {
+        smallest = leftIndex;
       }
-      return min;
-    }
-    while (
-      this.heap[leftChild] < this.heap[index] ||
-      this.heap[rightChild] < this.heap[index]
-    ) {
-      const min =
-        this.heap[leftChild] > this.heap[rightChild] ? rightChild : leftChild;
-      this.swap(min, index);
-      index = min;
-      leftChild = index * 2;
-      rightChild = index * 2 + 1;
+      if (
+        rightIndex < this.heap.length &&
+        this.heap[rightIndex] < this.heap[smallest]
+      ) {
+        smallest = rightIndex;
+      }
+      if (smallest === index) break;
+
+      this.swap(index, smallest);
+      index = smallest;
     }
 
     return min;
   }
 }
 
-const heap = new MinHeap();
-let result = [];
+const minHeap = new MinHeap();
+const result = [];
 
-for (let i = 0; i < n; i++) {
-  const num = input[i];
-
-  if (num > 0) {
-    heap.push(num);
-  } else {
-    const min = heap.pop();
-    min ? result.push(min) : result.push(0);
+for (const iterator of input) {
+  if (iterator === 0) {
+    const num = minHeap.pop();
+    num ? result.push(num) : result.push(0);
+    continue;
   }
+
+  minHeap.push(iterator);
 }
 
 console.log(result.join("\n"));
