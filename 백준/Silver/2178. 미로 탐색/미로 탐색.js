@@ -5,18 +5,10 @@ const input = fs.readFileSync(filePath).toString().trim().split("\n");
 const [N, M] = input.shift().split(" ").map(Number);
 const dy = [-1, 1, 0, 0];
 const dx = [0, 0, -1, 1];
-const graph = [];
-for (const iter of input) {
-  const arr = iter.split("").map(Number);
-  graph.push(arr);
-}
-const visited = Array(N)
-  .fill()
-  .map((_) => Array(M).fill(false));
+const graph = input.map((line) => line.split("").map(Number));
 
-const bfs = (x, y) => {
-  const queue = [[x, y]];
-  visited[y][x] = true;
+const bfs = () => {
+  const queue = [[0, 0]];
 
   while (queue.length) {
     const [qy, qx] = queue.shift();
@@ -27,7 +19,7 @@ const bfs = (x, y) => {
 
       if (my < 0 || my >= N || mx < 0 || mx >= M) continue;
 
-      if (graph[my][mx] === 1 && !visited[my][mx]) {
+      if (graph[my][mx] === 1) {
         graph[my][mx] = graph[qy][qx] + 1;
         queue.push([my, mx]);
       }
@@ -35,5 +27,5 @@ const bfs = (x, y) => {
   }
 };
 
-bfs(0, 0);
+bfs();
 console.log(graph[N - 1][M - 1]);
