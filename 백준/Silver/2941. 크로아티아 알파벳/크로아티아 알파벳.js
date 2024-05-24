@@ -14,4 +14,4 @@ for (const word of words) {
   }
 }
 
-console.log(count + input.length - [...input].filter((v) => v === " ").length);
+console.log(input.length);
