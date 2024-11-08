@@ -11,7 +11,7 @@ const getCount = (num) => {
   let count = 0;
 
   for (let i = 1; i <= N; i++) {
-    const calc = parseInt(num / i);
+    const calc = Math.floor(num / i);
     count += calc > N ? N : calc;
   }
 
@@ -23,7 +23,7 @@ let right = N ** 2;
 let result = 0;
 
 while (left <= right) {
-  let mid = parseInt((left + right) / 2);
+  let mid = Math.floor((left + right) / 2);
   const count = getCount(mid);
 
   count >= k ? ((result = mid), (right = mid - 1)) : (left = mid + 1);
