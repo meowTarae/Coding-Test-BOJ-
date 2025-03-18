@@ -1,17 +1,17 @@
 function solution(people, limit) {
-  let cnt = 0;
-  people.sort((a,b)=>a-b);
-  while(people.length > 0){
-      if (people.length === 1){
-          cnt++;
-          break;
-      }
-          
-      if(people.at(-1) + people.at(0) <= limit){
-          people.shift();
-      }
-      people.pop();
-      cnt++;
+  people.sort((a, b) => a - b);
+  let left = 0;
+  let right = people.length - 1;
+  let result = 0;
+
+  while (left <= right) {
+    if (people[left] + people[right] <= limit) {
+      left += 1;
+    }
+
+    right -= 1;
+    result += 1;
   }
-  return cnt;
+
+  return result;
 }
