@@ -1,37 +1,50 @@
-const fs = require("fs");
+let fs = require("fs");
 const filePath = process.platform === "linux" ? "/dev/stdin" : "input.txt";
 let input = fs.readFileSync(filePath).toString().trim().split("\n");
 
-const n = Number(input.shift());
-const map = Array(n)
+const N = +input.shift();
+const map = input.map((v1) => v1.split("").map((v2) => Number(v2)));
+const visited = Array(N)
   .fill()
-  .map((_, idx) => input[idx].split("").map((v) => v === "1"));
-
-const dy = [-1, 1, 0, 0];
-const dx = [0, 0, -1, 1];
+  .map(() => Array(N).fill(false));
+const dir = [
+  [-1, 0],
+  [1, 0],
+  [0, -1],
+  [0, 1],
+];
 
 const result = [];
 
-const DFS = (y, x) => {
-  if (y < 0 || x < 0 || y >= n || x >= n || !map[y][x]) return 0;
-
-  map[y][x] = false;
+const BFS = (y, x) => {
+  const queue = [[y, x]];
+  visited[y][x] = true;
   let count = 1;
 
-  for (let i = 0; i < 4; i++) {
-    const my = y + dy[i];
-    const mx = x + dx[i];
-    count += DFS(my, mx);
+  while (queue.length) {
+    const [qy, qx] = queue.shift();
+
+    for (let i = 0; i < 4; i++) {
+      const ny = qy + dir[i][0];
+      const nx = qx + dir[i][1];
+
+      if (ny < 0 || ny >= N || nx < 0 || nx >= N || visited[ny][nx]) continue;
+      if (map[ny][nx] !== 1) continue;
+
+      queue.push([ny, nx]);
+      visited[ny][nx] = true;
+      count++;
+    }
   }
 
-  return count;
+  result.push(count);
 };
 
-for (let i = 0; i < n; i++) {
-  for (let j = 0; j < n; j++) {
-    if (map[i][j]) {
-      result.push(DFS(i, j));
-    }
+for (let i = 0; i < N; i++) {
+  for (let j = 0; j < N; j++) {
+    if (visited[i][j] === true || map[i][j] !== 1) continue;
+
+    BFS(i, j);
   }
 }
 
